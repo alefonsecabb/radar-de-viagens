@@ -60,10 +60,38 @@
         {
           "date": "2026-06-03",
           "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 0.0
         }
       ],
-      "moving_avg_brl": 499.5,
-      "sample_count": 14
+      "moving_avg_brl": 333.0,
+      "sample_count": 21
     }
   }
 }
