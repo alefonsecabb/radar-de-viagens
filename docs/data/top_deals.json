@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-06-02T22:35:29.012296-03:00",
+  "run_id": "2026-06-03",
+  "sources_consulted": 16,
+  "sources_failed": [
+    "TravelpayoutsFlightsScraper",
+    "KiwiFlightsScraper"
+  ],
+  "total_deals_found": 7,
+  "stats": {
+    "best_discount": 0,
+    "cruises_found": 0,
+    "total_deals": 7,
+    "sources_consulted": 16,
+    "sources_failed": [
+      "TravelpayoutsFlightsScraper",
+      "KiwiFlightsScraper"
+    ]
+  },
+  "top_deals": []
+}

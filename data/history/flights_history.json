@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-06-03",
+  "items": {},
+  "routes": {
+    "-": {
+      "entries": [
+        {
+          "date": "2026-06-03",
+          "price_brl": 999.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 999.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 999.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 999.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 999.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 999.0
+        },
+        {
+          "date": "2026-06-03",
+          "price_brl": 999.0
+        }
+      ],
+      "moving_avg_brl": 999.0,
+      "sample_count": 7
+    }
+  }
+}
