@@ -1,6 +1,6 @@
 """
 CVC — pacotes de viagem (maior operadora do Brasil).
-Site server-side → requests + BS4.
+Usa Playwright para contornar bloqueios 403.
 """
 from __future__ import annotations
 
@@ -8,32 +8,28 @@ from datetime import date
 
 from bs4 import BeautifulSoup
 
+from src.scrapers._playwright_helpers import fetch_page_content
 from src.scrapers.base_scraper import BaseScraper, Deal
 from src.utils.config import PASSENGERS
-from src.utils.http_client import build_session
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-PROMO_URL = "https://www.cvc.com.br/pacotes/promocoes.aspx"
+PROMO_URL = "https://www.cvc.com.br/pacotes/"
 
 
 class CvcPackagesScraper(BaseScraper):
     limiter_key = "packages"
 
-    def __init__(self) -> None:
-        super().__init__()
-        self._session = build_session()
-
     def _fetch(self) -> list[Deal]:
-        try:
-            resp = self._session.get(PROMO_URL, timeout=15)
-            resp.raise_for_status()
-        except Exception as exc:
-            logger.warning(f"CVC: {exc}")
+        html = fetch_page_content(
+            PROMO_URL,
+            wait_selector="[class*='offer'], [class*='card'], [class*='pacote'], article",
+        )
+        if not html:
             return []
 
-        soup = BeautifulSoup(resp.text, "lxml")
+        soup = BeautifulSoup(html, "lxml")
         deals = []
         today = date.today().isoformat()
 

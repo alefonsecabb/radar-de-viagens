@@ -14,7 +14,7 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-PROMO_URL = "https://www.hurb.com/br/pacotes"
+PROMO_URL = "https://www.hurb.com/pacotes"
 
 
 class HurbPackagesScraper(BaseScraper):
@@ -55,7 +55,7 @@ class HurbPackagesScraper(BaseScraper):
             dest = dest_el.get_text(strip=True) if dest_el else "Destino Hurb"
             url  = link_el["href"] if link_el else PROMO_URL
             if url.startswith("/"):
-                url = "https://www.hurb.com/br" + url
+                url = "https://www.hurb.com" + url
 
             deals.append(Deal(
                 type="package",

@@ -15,7 +15,7 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-PROMO_URL = "https://www.costanobrasil.com.br/cruzeiros/encontre-cruzeiros"
+PROMO_URL = "https://www.costacruises.com/en/offer-list.html"
 
 
 class CostaCruisesScraper(BaseScraper):
@@ -69,7 +69,7 @@ class CostaCruisesScraper(BaseScraper):
 
             url = link_el["href"] if link_el else PROMO_URL
             if url.startswith("/"):
-                url = "https://www.costanobrasil.com.br" + url
+                url = "https://www.costacruises.com" + url
 
             deals.append(Deal(
                 type="cruise_repositioning" if is_repo else "package",

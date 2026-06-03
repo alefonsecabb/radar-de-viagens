@@ -1,7 +1,7 @@
 """
 CruiseCritic — agrega cruzeiros de reposicionamento de múltiplas companhias.
 Ótima fonte para encontrar transatlânticos baratos saindo das Américas.
-HTML pré-renderizado → requests + BS4 suficiente.
+Usa Playwright para contornar bloqueios 403.
 """
 from __future__ import annotations
 
@@ -9,42 +9,33 @@ from datetime import date
 
 from bs4 import BeautifulSoup
 
+from src.scrapers._playwright_helpers import fetch_page_content
 from src.scrapers.base_scraper import BaseScraper, Deal
 from src.utils.config import PASSENGERS
-from src.utils.http_client import build_session
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# Lista de cruzeiros de reposicionamento transatlânticos
-REPO_URL = "https://www.cruisecritic.com/articles.cfm?ID=594"
 SEARCH_URL = "https://www.cruisecritic.com/cruises/deals/"
 
 
 class CruiseCriticScraper(BaseScraper):
     limiter_key = "cruises"
 
-    def __init__(self) -> None:
-        super().__init__()
-        self._session = build_session()
-
     def _fetch(self) -> list[Deal]:
-        deals = []
-        for url in [REPO_URL, SEARCH_URL]:
-            try:
-                resp = self._session.get(url, timeout=15)
-                resp.raise_for_status()
-                deals.extend(self._parse(resp.text, url))
-            except Exception as exc:
-                logger.warning(f"CruiseCritic ({url}): {exc}")
-        return deals
+        html = fetch_page_content(
+            SEARCH_URL,
+            wait_selector="[class*='cruise'], [class*='deal'], article",
+        )
+        if not html:
+            return []
+        return self._parse(html)
 
-    def _parse(self, html: str, source_url: str) -> list[Deal]:
+    def _parse(self, html: str) -> list[Deal]:
         soup = BeautifulSoup(html, "lxml")
         deals = []
         today = date.today().isoformat()
 
-        # CruiseCritic usa estrutura de listagem variável
         cards = (
             soup.select(".listing-card, .cruise-listing")
             or soup.select("[class*='cruise-result']")
@@ -80,7 +71,7 @@ class CruiseCriticScraper(BaseScraper):
                         nights = int(part)
                         break
 
-            url = link_el["href"] if link_el else source_url
+            url = link_el["href"] if link_el else SEARCH_URL
             if url.startswith("/"):
                 url = "https://www.cruisecritic.com" + url
 
@@ -97,4 +88,5 @@ class CruiseCriticScraper(BaseScraper):
                 is_repositioning=True,
             ))
 
+        logger.info(f"CruiseCritic: {len(deals)} cruzeiros encontrados")
         return deals

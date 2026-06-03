@@ -39,6 +39,7 @@ def _load(path: Path) -> dict:
 
 def _save(path: Path, data: dict) -> None:
     data["updated_at"] = date.today().isoformat()
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
