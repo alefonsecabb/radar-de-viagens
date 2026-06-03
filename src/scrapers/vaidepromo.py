@@ -73,8 +73,8 @@ class VaiDePromoScraper(BaseScraper):
             deals.append(Deal(
                 type="flight",
                 title=title,
-                price_brl=price_brl if price_brl > 0 else 999.0,
-                total_3pax_brl=round((price_brl if price_brl > 0 else 999.0) * PASSENGERS, 2),
+                price_brl=price_brl,
+                total_3pax_brl=round(price_brl * PASSENGERS, 2),
                 source="vaidepromo",
                 booking_url=url,
                 retrieved_at=today,
