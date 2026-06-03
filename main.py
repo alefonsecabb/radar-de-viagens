@@ -92,8 +92,10 @@ def main() -> int:
     logger.info(f"Total bruto: {len(all_deals)} deals | Falhas: {len(failed_sources)}")
 
     if not all_deals:
-        logger.error("Nenhum deal coletado — abortando")
-        return 1
+        logger.warning("Nenhum deal coletado hoje — enviando aviso por e-mail")
+        send_digest([], {"best_discount": 0, "cruises_found": 0, "total_deals": 0,
+                         "sources_consulted": 0, "sources_failed": failed_sources}, failed_sources)
+        return 0  # Sai com sucesso para não marcar o workflow como falha
 
     # 2. Atualiza histórico de preços
     update_history(all_deals)

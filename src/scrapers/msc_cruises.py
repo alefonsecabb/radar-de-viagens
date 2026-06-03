@@ -15,8 +15,8 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-PROMO_URL = "https://www.msccruises.com.br/cruzeiros/promocoes"
-REPOSITIONING_URL = "https://www.msccruises.com.br/cruzeiros/transatlantico"
+PROMO_URL = "https://www.msccruzeiros.com.br/cruzeiros/encontre-um-cruzeiro"
+REPOSITIONING_URL = "https://www.msccruzeiros.com.br/cruzeiros/transatlantico"
 
 
 class MscCruisesScraper(BaseScraper):
@@ -80,7 +80,7 @@ class MscCruisesScraper(BaseScraper):
 
             url = link_el["href"] if link_el else source_url
             if url.startswith("/"):
-                url = "https://www.msccruises.com.br" + url
+                url = "https://www.msccruzeiros.com.br" + url
 
             deal_type = "cruise_repositioning" if is_repositioning else "package"
             title = (

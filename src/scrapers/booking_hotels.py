@@ -17,17 +17,18 @@ from src.utils.rate_limiter import LIMITERS
 logger = get_logger(__name__)
 
 # Destinos a verificar (slug da URL do Booking)
+# (city_name, ss_param) — ss deve ser só o nome da cidade em inglês
 DESTINATIONS = [
-    ("Lisboa", "pt/lisboa"),
-    ("Madrid", "es/madri"),
-    ("Paris", "fr/paris"),
-    ("Roma", "it/roma"),
-    ("Barcelona", "es/barcelona"),
-    ("Praga", "cz/praga"),
-    ("Viena", "at/viena"),
-    ("Amsterdã", "nl/amsterda"),
-    ("Bangkok", "th/bangkok"),
-    ("Cancún", "mx/cancun"),
+    ("Lisboa",    "Lisbon"),
+    ("Madrid",    "Madrid"),
+    ("Paris",     "Paris"),
+    ("Roma",      "Rome"),
+    ("Barcelona", "Barcelona"),
+    ("Praga",     "Prague"),
+    ("Viena",     "Vienna"),
+    ("Amsterdã",  "Amsterdam"),
+    ("Bangkok",   "Bangkok"),
+    ("Cancún",    "Cancun"),
 ]
 
 BASE_URL = "https://www.booking.com/searchresults/pt-br.html"

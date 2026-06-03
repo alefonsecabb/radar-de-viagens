@@ -51,10 +51,13 @@ async def _fetch(
         page = await context.new_page()
 
         try:
-            await page.goto(url, wait_until="networkidle", timeout=timeout)
+            # domcontentloaded é muito mais rápido que networkidle
+            await page.goto(url, wait_until="domcontentloaded", timeout=timeout)
+            # Aguarda mais um pouco para JS renderizar o conteúdo
+            await page.wait_for_timeout(3000)
             if wait_selector:
                 try:
-                    await page.wait_for_selector(wait_selector, timeout=timeout)
+                    await page.wait_for_selector(wait_selector, timeout=8000)
                 except Exception:
                     pass  # Continua mesmo se o seletor não aparecer
             content = await page.content()

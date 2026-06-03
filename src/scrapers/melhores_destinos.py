@@ -15,7 +15,7 @@ from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-BASE_URL = "https://www.melhoresdesinos.com.br"
+BASE_URL = "https://www.melhoresdestinos.com.br"
 FEED_URL = f"{BASE_URL}/passagens-aereas"
 
 
