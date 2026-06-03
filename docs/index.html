@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radar de Viagens — Barganhas Diárias</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>✈ Radar de Viagens</h1>
+  <p>Melhores barganhas do dia — passagens, hotéis, cruzeiros e pacotes para 3 passageiros</p>
+  <div id="last-updated">Carregando...</div>
+</header>
+
+<!-- RESUMO -->
+<section id="summary-cards">
+  <div class="summary-card">
+    <div class="value" id="stat-total">—</div>
+    <div class="label">Ofertas Hoje</div>
+  </div>
+  <div class="summary-card">
+    <div class="value" id="stat-discount">—</div>
+    <div class="label">Maior Desconto</div>
+  </div>
+  <div class="summary-card">
+    <div class="value" id="stat-cruises">—</div>
+    <div class="label">Cruzeiros</div>
+  </div>
+  <div class="summary-card">
+    <div class="value" id="stat-sources">—</div>
+    <div class="label">Fontes Consultadas</div>
+  </div>
+</section>
+
+<!-- FILTROS -->
+<section id="filters">
+  <button class="filter-btn active" data-filter="all">Todos</button>
+  <button class="filter-btn" data-filter="flight">✈ Voos</button>
+  <button class="filter-btn" data-filter="hotel">🏨 Hotéis</button>
+  <button class="filter-btn" data-filter="cruise">🚢 Cruzeiros</button>
+  <button class="filter-btn" data-filter="package">📦 Pacotes</button>
+  <select id="sort-select">
+    <option value="score">Ordenar: Melhor Score</option>
+    <option value="discount">Ordenar: Maior Desconto</option>
+    <option value="price">Ordenar: Menor Preço</option>
+    <option value="date">Ordenar: Data de Viagem</option>
+  </select>
+</section>
+
+<!-- GRID DE DEALS -->
+<main id="deals-grid">
+  <div id="loading">⏳ Carregando ofertas do dia...</div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p>Preços verificados automaticamente todo dia às 06:00 UTC (03:00 BRT).</p>
+  <p>Os preços são dinâmicos — confirme o valor final no site de origem antes de comprar.</p>
+  <p>Origens monitoradas: VCP · GRU · CGH &nbsp;|&nbsp; Projeto open-source no GitHub</p>
+</footer>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

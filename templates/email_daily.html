@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radar de Viagens</title>
+</head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:Arial,Helvetica,sans-serif;">
+
+<!-- CABEÇALHO -->
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#1a3a5c;">
+  <tr>
+    <td align="center" style="padding:28px 20px;">
+      <h1 style="color:#fff;margin:0;font-size:26px;letter-spacing:1px;">✈ Radar de Viagens</h1>
+      <p style="color:#90cdf4;margin:6px 0 0;font-size:14px;">{{ run_date }} &mdash; Melhores barganhas do dia para 3 passageiros</p>
+    </td>
+  </tr>
+</table>
+
+<!-- RESUMO -->
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-bottom:3px solid #e2e8f0;">
+  <tr>
+    <td align="center" style="padding:20px;">
+      <table cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding:10px 24px;text-align:center;">
+            <div style="font-size:32px;font-weight:bold;color:#1a3a5c;">{{ deals|length }}</div>
+            <div style="font-size:12px;color:#718096;text-transform:uppercase;letter-spacing:1px;">Barganhas</div>
+          </td>
+          <td style="padding:10px 24px;text-align:center;border-left:1px solid #e2e8f0;">
+            <div style="font-size:32px;font-weight:bold;color:#e53e3e;">{{ stats.best_discount }}%</div>
+            <div style="font-size:12px;color:#718096;text-transform:uppercase;letter-spacing:1px;">Maior desconto</div>
+          </td>
+          <td style="padding:10px 24px;text-align:center;border-left:1px solid #e2e8f0;">
+            <div style="font-size:32px;font-weight:bold;color:#2d9148;">{{ stats.cruises_found }}</div>
+            <div style="font-size:12px;color:#718096;text-transform:uppercase;letter-spacing:1px;">Cruzeiros</div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!-- DEALS -->
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;margin:0 auto;">
+  <tr><td style="padding:16px 20px 4px;"><h2 style="color:#1a3a5c;font-size:16px;margin:0;">🏆 Top {{ deals|length }} Barganhas de Hoje</h2></td></tr>
+  {% for deal in deals %}
+  {% set border_color = "#e53e3e" if deal.label == "HOT" else ("#d69e2e" if deal.label == "GOOD" else "#3182ce") %}
+  {% set badge_bg = "#e53e3e" if deal.label == "HOT" else ("#d69e2e" if deal.label == "GOOD" else "#3182ce") %}
+  {% set icon = "✈" if deal.type == "flight" else ("🚢" if "cruise" in deal.type else ("🏨" if deal.type == "hotel" else "📦")) %}
+  <tr>
+    <td style="padding:8px 20px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff;border-left:4px solid {{ border_color }};border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <tr>
+          <td style="padding:14px 16px;">
+            <!-- Rank + badge -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <span style="font-size:11px;color:#718096;">#{{ loop.index }} {{ icon }}</span>
+                  &nbsp;
+                  <span style="background:{{ badge_bg }};color:#fff;font-size:11px;font-weight:bold;padding:2px 8px;border-radius:10px;">
+                    {{ deal.label }}{% if deal.discount_pct > 0 %} −{{ deal.discount_pct }}%{% endif %}
+                  </span>
+                </td>
+              </tr>
+            </table>
+            <!-- Título -->
+            <p style="margin:8px 0 4px;font-size:15px;font-weight:bold;color:#1a202c;">{{ deal.title }}</p>
+            <!-- Preço -->
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td>
+                  <span style="font-size:22px;font-weight:bold;color:#2d9148;">R$ {{ "%.2f"|format(deal.total_3pax_brl)|replace(".", ",")|replace(",", ".", 1) }}</span>
+                  <span style="font-size:12px;color:#718096;"> para 3 passageiros</span>
+                </td>
+              </tr>
+            </table>
+            <!-- Datas -->
+            {% if deal.outbound_date %}
+            <p style="margin:4px 0 0;font-size:13px;color:#4a5568;">
+              📅 {% if deal.outbound_date %}{{ deal.outbound_date }}{% endif %}{% if deal.return_date %} → {{ deal.return_date }}{% endif %}{% if deal.nights %} ({{ deal.nights }} noites){% endif %}
+            </p>
+            {% endif %}
+            {% if deal.airline %}
+            <p style="margin:2px 0 0;font-size:12px;color:#718096;">Companhia: {{ deal.airline }}</p>
+            {% endif %}
+            {% if deal.ship %}
+            <p style="margin:2px 0 0;font-size:12px;color:#718096;">Navio: {{ deal.ship }} | {{ deal.departure_port }} → {{ deal.arrival_port }}</p>
+            {% endif %}
+            <!-- CTA -->
+            <table cellpadding="0" cellspacing="0" style="margin-top:12px;">
+              <tr>
+                <td style="background:#1a3a5c;border-radius:4px;">
+                  <a href="{{ deal.booking_url }}" style="display:inline-block;padding:9px 22px;color:#fff;font-size:13px;font-weight:bold;text-decoration:none;">Ver Oferta →</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- RODAPÉ -->
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;background:#1a3a5c;">
+  <tr>
+    <td align="center" style="padding:20px;color:#90cdf4;font-size:12px;line-height:1.6;">
+      <p style="margin:0;">Preços verificados em {{ timestamp_brt }} (Horário de Brasília)</p>
+      <p style="margin:4px 0 0;">Preços são dinâmicos e podem ter mudado no momento da compra.</p>
+      <p style="margin:4px 0 0;">
+        <a href="https://github.com" style="color:#63b3ed;text-decoration:none;">Ver Dashboard Completo</a>
+      </p>
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

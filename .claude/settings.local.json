@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\OneDrive\\\\Documents\\\\Projeto_viagens_Aposentadoria\" -Recurse -Force)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)",
+      "Bash(dir /s)",
+      "Bash(git *)",
+      "Bash(dir \"C:\\\\Users\\\\User\\\\OneDrive\\\\Documents\\\\Projeto_viagens_Aposentadoria\")",
+      "WebFetch(domain:developers.amadeus.com)",
+      "WebFetch(domain:www.travelpayouts.com)",
+      "WebFetch(domain:support.travelpayouts.com)",
+      "WebFetch(domain:app.travelpayouts.com)",
+      "Bash(gh --version)"
+    ]
+  }
+}
