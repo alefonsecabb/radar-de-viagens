@@ -15,7 +15,7 @@ from zoneinfo import ZoneInfo
 from jinja2 import Environment, FileSystemLoader
 
 from src.scrapers.base_scraper import Deal
-from src.utils.config import GMAIL_APP_PASSWORD, GMAIL_USER, RECIPIENT_EMAIL, TEMPLATES_DIR
+from src.utils.config import GMAIL_APP_PASSWORD, GMAIL_USER, RECIPIENT_EMAILS, TEMPLATES_DIR
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -50,7 +50,7 @@ def send_digest(deals: list[Deal], stats: dict, failed_sources: list[str]) -> No
         f"✈ Radar de Viagens — {len(deals)} barganhas em {datetime.now(BRT).strftime('%d/%m/%Y')}"
     )
     msg["From"] = f"Radar de Viagens <{GMAIL_USER}>"
-    msg["To"] = RECIPIENT_EMAIL
+    msg["To"] = ", ".join(RECIPIENT_EMAILS)
 
     if failed_sources:
         note = f"<p style='color:#888;font-size:12px'>⚠ Fontes indisponíveis hoje: {', '.join(failed_sources)}</p>"
@@ -62,7 +62,7 @@ def send_digest(deals: list[Deal], stats: dict, failed_sources: list[str]) -> No
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=ctx) as server:
             server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
-            server.sendmail(GMAIL_USER, RECIPIENT_EMAIL, msg.as_string())
-        logger.info(f"E-mail enviado para {RECIPIENT_EMAIL}")
+            server.sendmail(GMAIL_USER, RECIPIENT_EMAILS, msg.as_string())
+        logger.info(f"E-mail enviado para {', '.join(RECIPIENT_EMAILS)}")
     except smtplib.SMTPException as exc:
         logger.error(f"Falha ao enviar e-mail: {exc}")

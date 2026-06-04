@@ -16,7 +16,11 @@ KIWI_API_KEY = os.getenv("KIWI_API_KEY", "")
 
 GMAIL_USER = os.getenv("GMAIL_USER", "")
 GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "")
-RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL", "alefonsecabb@gmail.com")
+RECIPIENT_EMAILS = [
+    e.strip()
+    for e in os.getenv("RECIPIENT_EMAIL", "alefonsecabb@gmail.com,melissafabiane@gmail.com").split(",")
+    if e.strip()
+]
 
 RUN_ENV = os.getenv("RUN_ENV", "local")
 

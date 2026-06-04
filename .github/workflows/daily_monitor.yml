@@ -36,7 +36,7 @@ jobs:
           KIWI_API_KEY:          ${{ secrets.KIWI_API_KEY }}
           GMAIL_USER:            ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD:    ${{ secrets.GMAIL_APP_PASSWORD }}
-          RECIPIENT_EMAIL:       alefonsecabb@gmail.com
+          RECIPIENT_EMAIL:       alefonsecabb@gmail.com,melissafabiane@gmail.com
           RUN_ENV:               github_actions
         run: python main.py
 
