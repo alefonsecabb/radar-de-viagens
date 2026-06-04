@@ -1,3 +1,4 @@
+
 # ✈ Radar de Viagens — Monitor Diário de Barganhas
 
 Busca automaticamente as melhores ofertas de passagens, hotéis, cruzeiros e pacotes para **3 passageiros** partindo de **VCP · GRU · CGH**. Entrega um digest por e-mail todo dia às 03:00 BRT e publica um dashboard público no GitHub Pages.
@@ -11,6 +12,244 @@ Busca automaticamente as melhores ofertas de passagens, hotéis, cruzeiros e pac
 - E-mail HTML diário com top 10 barganhas e links diretos para compra
 - Histórico de preços em JSON (90 dias por rota) — sem banco de dados externo
 - Custo zero: GitHub Actions (grátis) + GitHub Pages (grátis)
+  
+  
+  1. A ideia central
+
+  O projeto é um robô de vigilância de preços de viagens. Todo dia de madrugada ele:
+  1. Visita mais de 14 sites e APIs de viagem
+  2. Coleta as ofertas disponíveis
+  3. Compara com o histórico de preços dos últimos 90 dias
+  4. Classifica as melhores oportunidades
+  5. Manda um e-mail com o resumo
+  6. Publica os dados em um dashboard público
+
+  Tudo isso acontece automaticamente, sem custo de servidor, usando o GitHub como
+  infraestrutura.
+
+  ---
+  2. O disparo automático — GitHub Actions
+
+  O arquivo .github/workflows/daily_monitor.yml é o "despertador" do sistema:
+
+  on:
+    schedule:
+      - cron: '0 6 * * *'   # 06:00 UTC = 03:00 BRT, todo dia
+
+  O GitHub lê esse arquivo e, todo dia às 03h da manhã (horário de Brasília), aluga uma
+  máquina virtual temporária no servidor deles, instala Python, instala as dependências, e
+  executa python main.py. Quando termina, a máquina some. Você não paga nada por isso.
+
+  As senhas e chaves de API ficam armazenadas como Secrets no GitHub (nunca no código), e são
+   injetadas como variáveis de ambiente:
+
+  GMAIL_USER:         ${{ secrets.GMAIL_USER }}
+  GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+  RECIPIENT_EMAIL:    alefonsecabb@gmail.com,melissafabiane@gmail.com
+
+  ---
+  3. O ponto de entrada — main.py
+
+  O main.py é o maestro que coordena tudo. Ele segue 6 etapas em sequência:
+
+  1. Coleta paralela de dados (scraping)
+  2. Atualiza histórico de preços
+  3. Calcula scores dos cruzeiros de reposicionamento
+  4. Calcula scores das demais ofertas
+  5. Gera JSONs e publica no dashboard
+  6. Envia o e-mail
+
+  O passo 1 usa paralelismo (ThreadPoolExecutor com 4 workers) — ou seja, até 4 scrapers
+  rodam simultaneamente, economizando tempo. Se um scraper falhar, os outros continuam
+  normalmente.
+
+  ---
+  4. A estrutura de dados — Deal
+
+  Toda oferta coletada é representada por um objeto Deal (definido em
+  src/scrapers/base_scraper.py). É como uma ficha padronizada:
+
+  @dataclass
+  class Deal:
+      type: str           # "flight", "hotel", "cruise_repositioning", "package"
+      title: str
+      price_brl: float    # preço por pessoa
+      total_3pax_brl: float  # total para 3 passageiros
+      source: str         # "PassagensPromo", "Kiwi", etc.
+      booking_url: str
+      origin: str
+      destination: str
+      outbound_date: str
+      return_date: str
+      score: float        # calculado depois
+      label: str          # "HOT", "GOOD", "FAIR", "SKIP"
+      discount_pct: float
+      # ... e mais campos específicos por tipo
+
+  Todos os scrapers produzem esse mesmo formato — é um contrato entre os coletores e o
+  restante do sistema.
+
+  ---
+  5. Os coletores — Scrapers
+
+  Há dois tipos de scraper:
+
+  a) Scrapers de HTML (BeautifulSoup) — para sites estáticos:
+  - Baixam a página HTML, procuram elementos pelo seletor CSS
+  - Ex: PassagensPromo, VaiDePromo
+
+  b) Scrapers de API REST — para sites com API:
+  - Fazem chamada HTTP com parâmetros, recebem JSON
+  - Ex: KiwiFlights — busca voos com origem em VCP/GRU/CGH para "qualquer lugar", 3
+  passageiros, até 180 dias
+
+  c) Scrapers com Playwright — para sites que precisam de JavaScript:
+  - Abrem um navegador real (Chromium headless) e esperam a página carregar
+  - Ex: CostaCruises — detecta cruzeiros de reposicionamento por palavras-chave
+
+  Todos herdam de BaseScraper, que fornece gratuitamente:
+  - Retry automático: se falhar, tenta mais 3 vezes (espera 2s, 4s, 8s)
+  - Rate limiting: token bucket — cada fonte tem um limite diário de requisições
+
+  ---
+  6. O histórico de preços — price_history.py
+
+  Esse é o "cérebro" da comparação. Para cada rota/hotel/navio, o sistema mantém um arquivo
+  JSON em data/history/ com até 90 entradas (uma por dia):
+
+  "VCP-MIA": {
+    "entries": [
+      {"date": "2026-06-01", "price_brl": 1250.00},
+      {"date": "2026-06-02", "price_brl": 1245.00},
+      {"date": "2026-06-03", "price_brl": 1280.00}
+    ],
+    "moving_avg_brl": 1258.33,
+    "sample_count": 3
+  }
+
+  A cada execução, o preço de hoje é adicionado e a média móvel é recalculada. Com no mínimo
+  3 amostras, o sistema já consegue identificar se o preço está abaixo da média.
+
+  ---
+  7. O sistema de pontuação — Scoring
+
+  Há dois scorers com lógicas diferentes:
+
+  a) Cruzeiros de reposicionamento (repositioning_scorer.py):
+  - Pontuação começa em 50 (base alta, são raros e valiosos)
+  - Ganha bônus: +20 se sai em menos de 60 dias, +15 se tem 14+ noites, +10 por porto de
+  embarque nacional, +10 por mês de alta temporada
+  - Rótulo: HOT se ≥ 60, GOOD abaixo disso
+
+  b) Demais ofertas (deal_scorer.py):
+  Se tem histórico (≥ 3 amostras):
+    desconto % = (média_histórica - preço_atual) / média_histórica × 100
+    score = desconto %
+
+  Se não tem histórico (modo bootstrap):
+    Usa tabela de referência por tipo:
+      Voo HOT < R$400/pax, GOOD < R$900/pax ...
+
+  Depois, filtra tudo com score abaixo de -20% (armadilha de preço) e ordena do maior para o
+  menor.
+
+  ---
+  8. O e-mail — email_sender.py
+
+  Usa SMTP direto com Gmail (porta 465, SSL). O HTML do e-mail é gerado pelo Jinja2 — um
+  sistema de templates onde você escreve HTML com variáveis:
+
+  {% for deal in deals %}
+    <div style="border-left: 4px solid {{ deal.label_color }}">
+      <strong>{{ deal.title }}</strong>
+      R$ {{ deal.price_brl | format_currency }}
+      {{ deal.label }}  <!-- HOT / GOOD / FAIR -->
+    </div>
+  {% endfor %}
+
+  O template fica em templates/email_daily.html. O sistema renderiza esse template com os top
+   10 deals e envia para todos os e-mails da lista RECIPIENT_EMAILS.
+
+  ---
+  9. O dashboard público — json_builder.py + GitHub Pages
+
+  Após o scoring, o sistema gera arquivos JSON em docs/data/:
+
+  docs/data/top_deals.json         ← top 10 geral
+  docs/data/flights_latest.json    ← só voos
+  docs/data/hotels_latest.json     ← só hotéis
+  docs/data/cruises_latest.json    ← só cruzeiros
+  docs/data/packages_latest.json   ← só pacotes
+
+  O GitHub Pages serve a pasta docs/ como site estático. O frontend JavaScript do dashboard
+  faz fetch("data/top_deals.json") e exibe as ofertas. Quando o robô commita os JSONs
+  atualizados, o dashboard se atualiza automaticamente.
+
+  ---
+  10. O fluxo completo em uma linha do tempo
+
+  03:00 BRT  →  GitHub Actions acorda
+  03:01      →  14 scrapers rodam em paralelo (4 por vez)
+  03:10      →  Histórico de preços atualizado
+  03:11      →  Scores calculados, top 10 selecionado
+  03:12      →  JSONs gerados, commit feito, push para GitHub
+  03:13      →  E-mail enviado para alefonsecabb e melissafabiane
+  03:14      →  Dashboard público atualizado
+  03:15      →  Máquina virtual do GitHub é destruída
+
+  ---
+  Resumo da arquitetura
+
+  ┌──────────────┬──────────────────────────────────┬─────────────────────────────────────┐
+  │    Camada    │            Tecnologia            │               Arquivo               │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Agendamento  │ GitHub Actions (cron)            │ .github/workflows/daily_monitor.yml │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Orquestração │ Python (ThreadPoolExecutor)      │ main.py                             │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Coleta       │ Requests + BeautifulSoup +       │ src/scrapers/*.py                   │
+  │              │ Playwright                       │                                     │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Histórico    │ JSON + média móvel               │ src/scoring/price_history.py        │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Pontuação    │ Algoritmo de desconto %          │ src/scoring/deal_scorer.py          │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Notificação  │ Gmail SMTP + Jinja2              │ src/notifiers/email_sender.py       │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Dashboard    │ GitHub Pages + JSON              │ docs/data/*.json                    │
+  ├──────────────┼──────────────────────────────────┼─────────────────────────────────────┤
+  │ Configuração │ Variáveis de ambiente + .env     │ src/utils/config.py                 │
+  └──────────────┴──────────────────────────────────┴─────────────────────────────────────┘
+
+  O ponto mais elegante do projeto é que ele usa o próprio Git como banco de dados — o
+  histórico de preços, os dados do dashboard e os logs de execução ficam todos versionados no
+   repositório, sem nenhum custo de infraestrutura.
+
+  ---
+  Tem alguma parte específica que quer aprofundar?
+
+─────────────────────────────────────────────────────────────────────────────────────────────
+ Ready to code?
+
+ Here is Claude's plan:
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+ Tarefa: Explicação técnica do projeto Radar de Viagens
+
+ Contexto
+
+ O usuário quer entender como o projeto funciona tecnicamente, como se fosse uma aula.
+ Esta é uma tarefa de explicação/educação — nenhuma alteração de código é necessária.
+
+ Resultado
+
+ Explicação completa fornecida diretamente na conversa, cobrindo:
+ - Arquitetura geral e fluxo de dados
+ - Camadas do sistema (scraping, scoring, e-mail, dashboard)
+ - Automação via GitHub Actions
+ - Exemplos de código dos módulos principais
+╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+
+   repositório, sem nenhum custo de infraestrutura.
 
 ## Configuração
 
