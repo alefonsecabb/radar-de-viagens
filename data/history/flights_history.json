@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-06-04",
+  "updated_at": "2026-06-05",
   "items": {},
   "routes": {
     "-": {
@@ -140,10 +140,62 @@
         {
           "date": "2026-06-04",
           "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-05",
+          "price_brl": 0.0
         }
       ],
-      "moving_avg_brl": 205.68,
-      "sample_count": 34
+      "moving_avg_brl": 148.79,
+      "sample_count": 47
     }
   }
 }
