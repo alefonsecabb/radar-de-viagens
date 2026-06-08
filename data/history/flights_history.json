@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-06-07",
+  "updated_at": "2026-06-08",
   "items": {},
   "routes": {
     "-": {
@@ -280,10 +280,58 @@
         {
           "date": "2026-06-07",
           "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-08",
+          "price_brl": 0.0
         }
       ],
-      "moving_avg_brl": 101.35,
-      "sample_count": 69
+      "moving_avg_brl": 86.33,
+      "sample_count": 81
     }
   }
 }
