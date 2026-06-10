@@ -1,64 +1,12 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-06-09",
+  "updated_at": "2026-06-10",
   "items": {},
   "routes": {
     "-": {
       "entries": [
         {
           "date": "2026-06-03",
-          "price_brl": 999.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 999.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 999.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 999.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
-          "price_brl": 0.0
-        },
-        {
-          "date": "2026-06-03",
           "price_brl": 0.0
         },
         {
@@ -363,10 +311,62 @@
         },
         {
           "date": "2026-06-09",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
+          "price_brl": 0.0
+        },
+        {
+          "date": "2026-06-10",
           "price_brl": 0.0
         }
       ],
-      "moving_avg_brl": 44.4,
+      "moving_avg_brl": 0.0,
       "sample_count": 90
     }
   }
